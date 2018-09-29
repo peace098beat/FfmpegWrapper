@@ -1,9 +1,8 @@
 
 # FFmpeg CS Wrapper
 
-[!https://trac.ffmpeg.org/ffmpeg-logo.png]
 
-(!https://trac.ffmpeg.org/ffmpeg-logo.png)
+![FFmpeg](https://trac.ffmpeg.org/ffmpeg-logo.png)
 
 [–{‰Æ](https://www.ffmpeg.org/)
 

@@ -10,6 +10,8 @@ namespace FfmpegWrapper
 
     public class Ffmpeg
     {
+        public string version = "1.0";
+
         /// <summary>
         /// ffmpeg.exeへのパス
         /// </summary>
@@ -82,6 +84,56 @@ namespace FfmpegWrapper
         {
             //throw new NotImplementedException();
         }
+
+
+        public int GetVideoDuration(string inputFilePath)
+        {
+      
+            string basePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
+            string argument = string.Format("-v error -select_streams v:0 -show_entries stream=duration -sexagesimal -of default=noprint_wrappers=1:nokey=1  \"{0}\" ", inputFilePath);
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo.FileName = Path.Combine(basePath, @"ffprobe.exe");
+            proc.StartInfo.Arguments = argument;
+
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.CreateNoWindow = false;
+
+            if (!proc.Start())
+            {
+                Console.WriteLine("Error starting");
+                return -1;
+            }
+
+            string output = proc.StandardOutput.ReadToEnd(); // 標準出力の読み取り
+            string error = proc.StandardError.ReadToEnd();
+
+            //string duration = proc.StandardOutput.ReadToEnd().Replace("\r\n", "");
+            // Remove the milliseconds
+            string duration = output.Substring(0, output.LastIndexOf("."));
+            proc.WaitForExit();
+            proc.Close();
+
+            Console.WriteLine(":argument:" + argument + Environment.NewLine);
+            Console.WriteLine(":duration:"+duration);
+            Console.WriteLine(":output:"+output);
+            Console.WriteLine(":error:"+error);
+
+            string HH = duration.Split(':')[0];
+            string mm = duration.Split(':')[1];
+            string ss = duration.Split(':')[2];
+
+            Console.WriteLine(":HH:" + HH);
+            Console.WriteLine(":mm:" + mm);
+            Console.WriteLine(":ss:" + ss);
+
+            int duration_sec = 60*60*int.Parse(HH) + 60*int.Parse(mm) + int.Parse(ss);
+
+
+            return duration_sec;
+        }
+
 
         /// <summary>
         /// ファイル名を整形する

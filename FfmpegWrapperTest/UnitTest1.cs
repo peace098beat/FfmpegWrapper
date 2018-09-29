@@ -66,5 +66,22 @@ namespace FfmpegWrapperTest
             Assert.IsTrue(File.Exists(OutputFilePath));
 
         }
+
+        [TestMethod, TestCategory("でゅレーション")]
+        public void 正常系_動画の長さを取得()
+        {
+
+            FfmpegWrapper.Ffmpeg ffmpeg = new Ffmpeg();
+
+            string appdir = AppDomain.CurrentDomain.BaseDirectory;
+            string InputFilePath = Path.Combine(appdir, "test.wmv");
+
+            int duration = ffmpeg.GetVideoDuration(InputFilePath );
+            
+            Assert.IsTrue(duration == 30);
+
+        }
     }
+
+
 }

@@ -17,6 +17,10 @@ namespace FfmpegWrapper
         /// </summary>
         public string FfmpegExePath = "";
 
+        public string StdOutput;
+        public string StdError;
+        public string Arguments;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -49,6 +53,7 @@ namespace FfmpegWrapper
 
         /// <summary>
         /// プロセスの実行
+        /// (TODO) 結果の文字列を戻す必要があるよね。
         /// </summary>
         /// <param name="argument">ffmpegの引数</param>
         public void Execute(string argument)
@@ -63,7 +68,7 @@ namespace FfmpegWrapper
             proc.StartInfo.RedirectStandardOutput = true;
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.CreateNoWindow = false;
+            proc.StartInfo.CreateNoWindow = true;
 
 
             proc.Start();
@@ -74,9 +79,13 @@ namespace FfmpegWrapper
             proc.WaitForExit();
             proc.Close();
 
-            Console.WriteLine(":argument:"+ argument+Environment.NewLine);
+            Console.WriteLine(":argument:" + argument + Environment.NewLine);
             Console.WriteLine(output);
             Console.WriteLine(error);
+
+            this.Arguments = argument;
+            this.StdOutput = output;
+            this.StdError = error;
 
         }
 
@@ -88,7 +97,7 @@ namespace FfmpegWrapper
 
         public int GetVideoDuration(string inputFilePath)
         {
-      
+
             string basePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
             string argument = string.Format("-v error -select_streams v:0 -show_entries stream=duration -sexagesimal -of default=noprint_wrappers=1:nokey=1  \"{0}\" ", inputFilePath);
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
@@ -98,38 +107,36 @@ namespace FfmpegWrapper
             proc.StartInfo.RedirectStandardOutput = true;
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.CreateNoWindow = false;
+            proc.StartInfo.CreateNoWindow = true;
 
             if (!proc.Start())
             {
-                Console.WriteLine("Error starting");
+                this.StdOutput = "[ERROR] Ffmpeg.GetVideoDuration: Error Starting!";
+                this.StdError = "[ERROR] Ffmpeg.GetVideoDuration: Error Starting!";
                 return -1;
             }
 
-            string output = proc.StandardOutput.ReadToEnd(); // 標準出力の読み取り
-            string error = proc.StandardError.ReadToEnd();
 
-            //string duration = proc.StandardOutput.ReadToEnd().Replace("\r\n", "");
+            this.Arguments = argument;
+            this.StdOutput = proc.StandardOutput.ReadToEnd(); // 標準出力の読み取り
+            this.StdError = proc.StandardError.ReadToEnd();
+
             // Remove the milliseconds
-            string duration = output.Substring(0, output.LastIndexOf("."));
+            string duration = this.StdOutput.Split('.')[0];
+            if (duration.Length <= 0) duration = "0:00:00";
+
             proc.WaitForExit();
             proc.Close();
 
-            Console.WriteLine(":argument:" + argument + Environment.NewLine);
-            Console.WriteLine(":duration:"+duration);
-            Console.WriteLine(":output:"+output);
-            Console.WriteLine(":error:"+error);
+            // Stdの保存
+
+            // 以下, durationの計算
 
             string HH = duration.Split(':')[0];
             string mm = duration.Split(':')[1];
             string ss = duration.Split(':')[2];
 
-            Console.WriteLine(":HH:" + HH);
-            Console.WriteLine(":mm:" + mm);
-            Console.WriteLine(":ss:" + ss);
-
-            int duration_sec = 60*60*int.Parse(HH) + 60*int.Parse(mm) + int.Parse(ss);
-
+            int duration_sec = 60 * 60 * int.Parse(HH) + 60 * int.Parse(mm) + int.Parse(ss);
 
             return duration_sec;
         }

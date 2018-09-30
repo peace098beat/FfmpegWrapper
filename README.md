@@ -8,6 +8,10 @@
 
 FFmpeg‚ÌC#ƒ‰ƒbƒp[.
 
+
+![FFmpegCSWrapper Trimer](Logo/icon.png)
+
+
 ## Feature
 
 1. Triming : ŠÔØ‚èæ‚è

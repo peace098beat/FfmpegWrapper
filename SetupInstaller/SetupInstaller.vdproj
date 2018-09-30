@@ -228,6 +228,11 @@
             "AssemblyAsmDisplayName" = "8:FfmpegWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_FDD8C3745868C40405429FC7EA778770"
+                    {
+                    "Name" = "8:FfmpegWrapper.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:FfmpegWrapper.dll"
             "TargetName" = "8:"
@@ -262,15 +267,26 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_632D3B828D4A43959C48D51147688C92"
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_7D669AE334C34445B2993DDEB946B8DD"
                     {
-                    "Name" = "8:FfmpegTrimer"
-                    "AlwaysCreate" = "11:TRUE"
+                    "Name" = "8:FiFiFactory"
+                    "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
-                    "Property" = "8:_0AB3CFD182DD4138B612D182F849130F"
+                    "Property" = "8:_A0EEB62C6F0B472FA247A2907EF8C711"
                         "Folders"
                         {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_39F6BBB58A344A0D91ADDBF7A826DDF6"
+                            {
+                            "Name" = "8:FfmpegTrimer"
+                            "AlwaysCreate" = "11:TRUE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_0AB3CFD182DD4138B612D182F849130F"
+                                "Folders"
+                                {
+                                }
+                            }
                         }
                     }
                 }
@@ -315,7 +331,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FfmpegTrimer"
         "ProductCode" = "8:{77A48093-2C55-406D-9F96-3D0DD65A516F}"
-        "PackageCode" = "8:{BEC16B78-ED0B-4845-8DB1-B7565374834E}"
+        "PackageCode" = "8:{C8007205-AEFF-4AF0-B9CA-60DAC3155079}"
         "UpgradeCode" = "8:{12FC01AE-C9E8-48F8-9977-59334D063E04}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -437,14 +453,14 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_2AD918181C40482BB6DD4E62B00DD125"
             {
-            "Name" = "8:Shortcut to プライマリ出力 from FfmpegTrimerApp (Release Any CPU)"
+            "Name" = "8:FfmpegTrimerApp"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_1E2694ACE1F447C99BE45F419FD5A643"
-            "Folder" = "8:_632D3B828D4A43959C48D51147688C92"
+            "Folder" = "8:_39F6BBB58A344A0D91ADDBF7A826DDF6"
             "WorkingFolder" = "8:_B8151853BAB34A038D49BFA241E263A9"
             "Icon" = "8:"
             "Feature" = "8:"

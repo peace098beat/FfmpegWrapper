@@ -39,8 +39,8 @@ namespace Trimer
             WriteConsole("Please D&D Movie Files.");
             WriteConsole("Run Convert Start ....");
 
-            // Run Main Thread
             Task.Run(() => RunMainLoopAsync());
+
 
         }
 
@@ -54,7 +54,7 @@ namespace Trimer
             foreach (string file in filePathes)
             {
                 this.Ques.Enqueue(file);
-                WriteConsole(Environment.NewLine+ $"[ADD]{file}");
+                WriteConsole($"[ADD]{file}");
             }
 
         }
@@ -69,27 +69,11 @@ namespace Trimer
 
         //****************************************************//
 
-        // 非同期処理 
-        //public bool JobRunningFlg = false;
-
-        private async void button1_Click(object sender, EventArgs e)
+        private void button_Canel_Click(object sender, EventArgs e)
         {
-
-            if (this.button_RunCancel.Text == "CANCEL")
-            {
-                // キャンセル処理
-                this.button_RunCancel.Text = "RUN";
-
-            }
-            else if (this.button_RunCancel.Text == "RUN")
-            {
-                // 実行処理
-                //TestMain();
-                this.button_RunCancel.Text = "CANCEL";
-
-            }
-
+            this.Cancel = true;
         }
+
 
         /// <summary>
         /// メインループ(非同期)
@@ -98,18 +82,30 @@ namespace Trimer
         {
             WriteConsole($"[INFO] TestMain");
 
-            while (!Cancel)
+            while (true)
             {
+
+                // キャンセル処理
+                if (this.Cancel == true)
+                {
+                    WriteConsole($"[CANCEL] メインループが、キャンセルされました", FontColors.RED);
+                    this.Cancel = false;
+                    return;
+                }
+
+
                 // キューが無いときは、ちょっと待つ
                 if (Ques.Count == 0)
                 {
-                    WriteConsole($".", NewlineFlg:false);
+                    //WriteConsole($".", NewlineFlg: false);
 
                     await Task.Delay(300);
                     continue;
                 }
 
+                // トリミング時間を取得する
                 int triming_duration = (int)numericUpDown_TrimingDuration.Value;
+                bool overwriteFlg = checkBox_OverWrite.Checked;
 
                 // 処理するファイルを取得
                 if (Ques.Count != 0)
@@ -127,15 +123,24 @@ namespace Trimer
 
                     WriteConsole($"[TARGET] {Path.GetFileName(target_filepath)}", FontColors.YELLOW);
 
-                    await RunTriming(target_filepath, triming_duration);
+                    await Task.Run(new Action(() =>
+                     {
+                         RunTriming(target_filepath, triming_duration, overwriteFlg);
+                     }));
                 }
             }
+
         }
 
         //****************************************************//
 
-        // triming
-        async Task RunTriming(string TargetFilePath, int duration)
+        /// <summary>
+        /// (非同期) トリミング処理
+        /// </summary>
+        /// <param name="TargetFilePath"></param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
+        public void RunTriming(string TargetFilePath, int duration, bool OverwriteFlg)
         {
             string InputFilePath = TargetFilePath;
             int total_duration = ffmpeg.GetVideoDuration(TargetFilePath);
@@ -151,29 +156,47 @@ namespace Trimer
             string SubDir = Path.Combine(Path.GetDirectoryName(InputFilePath), Path.GetFileNameWithoutExtension(InputFilePath));
             Directory.CreateDirectory(SubDir);
 
-            for (int t = 0; t < total_duration; t += duration)
+            // 切り出す動画の数
+            int N = Convert.ToInt32(Math.Ceiling((double)total_duration / duration));
+
+            for (int i = 1; i <= N; i++)
             {
+                // キャンセル処理
+                if (this.Cancel == true)
+                {
+                    WriteConsole($"[CANCEL] サブジョブが、キャンセルされました", FontColors.RED);
+                    this.Cancel = false;
+                    return;
+                }
+
+                // プログレスバーの表示
                 string QuesProgressBar = "";
-                int persentage = 10-(int)(10*(float)t / total_duration);
-                for (int i = 1; i <= persentage; i++)
+                for (int j = 1; j <= (N - i); j++)
                 {
                     QuesProgressBar += "|";
                 }
-
                 WriteConsole($"[TRIMING] {QuesProgressBar}", FontColors.GREEN);
 
-
-                string OutFilePath = Ffmpeg.SubFileName(InputFilePath, t + 1);
-                string OutFileName = Path.GetFileName(OutFilePath);
-                string NewOutFilePath = Path.Combine(SubDir, OutFileName);
-
-                int start = t;
-
-                await Task.Delay(300);
-
+                // 入出力の設定
+                string _OutFilePath = Ffmpeg.SubFileName(InputFilePath, i + 1);
+                string _OutFileName = Path.GetFileName(_OutFilePath);
+                string NewOutFilePath = Path.Combine(SubDir, _OutFileName);
+                int start = i;
                 WriteConsole($"[TRIMING] Start:{start}s, Duration:{duration}s, Total:{total_duration}s");
 
-                //ffmpeg.Triming(InputFilePath, NewOutFilePath, start, duration);
+                // 上書きしない場合はなにもしない
+                if (OverwriteFlg)
+                {
+                    // トリミング処理
+                    ffmpeg.Triming(InputFilePath, NewOutFilePath, start, duration);
+                }
+                else
+                {
+                    WriteConsole($"[TRIMING] ファイルが存在します. 処理を回避します.");
+                }
+
+
+
             }
         }
 
@@ -248,6 +271,18 @@ namespace Trimer
         {
             this.Cancel = true;
         }
+
+        private void cancelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Cancel = true;
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Cancel = true;
+            Application.Exit();
+        }
+
 
 
 

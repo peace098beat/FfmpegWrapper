@@ -1,14 +1,10 @@
-﻿using System;
+﻿using FfmpegWrapper;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using FfmpegWrapper;
 
 namespace Trimer
 {
@@ -27,7 +23,7 @@ namespace Trimer
             this.ffmpeg = new Ffmpeg();
             this.Ques = new Queue<string>();
 
-            this.Text = "FFmpegCSWrapper Trimer ver " + ffmpeg.version;
+            this.Text = "FfmpegTrimerApp";
 
             this.richTextBox_Console.AllowDrop = true;
             this.richTextBox_Console.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
@@ -178,22 +174,34 @@ namespace Trimer
                 WriteConsole($"[TRIMING] {QuesProgressBar}", FontColors.GREEN);
 
                 // 入出力の設定
-                string _OutFilePath = Ffmpeg.SubFileName(InputFilePath, i + 1);
+                string _OutFilePath = Ffmpeg.SubFileName(InputFilePath, i);
                 string _OutFileName = Path.GetFileName(_OutFilePath);
                 string NewOutFilePath = Path.Combine(SubDir, _OutFileName);
-                int start = i;
+                int start = (i - 1) * duration;
                 WriteConsole($"[TRIMING] Start:{start}s, Duration:{duration}s, Total:{total_duration}s");
 
-                // 上書きしない場合はなにもしない
-                if (OverwriteFlg)
+
+                // 出力ファイルの有無
+                if (File.Exists(NewOutFilePath))
                 {
-                    // トリミング処理
-                    ffmpeg.Triming(InputFilePath, NewOutFilePath, start, duration);
+                    // 出力ファイルがある場合
+                    if (OverwriteFlg)
+                    {
+                        // 上書きします
+                        ffmpeg.Triming(InputFilePath, NewOutFilePath, start, duration);
+                    }
+                    else
+                    {
+                        // ファイルが存在しており, 上書きしない
+                        WriteConsole($"[TRIMING] ファイルが存在します. 上書きしません.");
+                    }
                 }
                 else
                 {
-                    WriteConsole($"[TRIMING] ファイルが存在します. 処理を回避します.");
+                    // ない場合 新しく作ります
+                    ffmpeg.Triming(InputFilePath, NewOutFilePath, start, duration);
                 }
+
 
 
 

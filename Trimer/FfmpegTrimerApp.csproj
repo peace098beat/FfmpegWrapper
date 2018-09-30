@@ -7,7 +7,7 @@
     <ProjectGuid>{30F17D09-3517-408A-8168-F4DA4512762E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Trimer</RootNamespace>
-    <AssemblyName>Trimer</AssemblyName>
+    <AssemblyName>FfmpegTrimerApp v1.0</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -88,7 +88,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="application.ico" />
+    <Content Include="application.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
